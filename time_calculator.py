@@ -99,16 +99,51 @@ def order(period, final_minutes, final_hour, e_12, var1, day,  var2='', var3='')
                     else:
                         return '{0}:{1:02d} {2} {3}'.format(dif_h, dif_m, var1, var2)
 
+def order_12_48(final_hour, final_minutes, every_12, am_pm, day, n_d=''):
+
+    if final_minutes < 60:
+
+        final_hour -= every_12
+        
+
+        if day:
+            return '{0}:{1:02d} {2}, {3} {4}'.format(final_hour, final_minutes, am_pm , day, n_d)
+        else:
+            return '{0}:{1:02d} {2} {3}'.format(final_hour, final_minutes, am_pm, n_d)
+
+    elif 60 <= final_minutes < 120:
+
+        dif_m = final_minutes - 60
+        final_hour += 1
+        final_hour -= every_12
+        
+
+        if final_hour >= 12:
+            if day:
+                return '{0}:{1:02d} {2}, {3} {4}'.format(final_hour, dif_m, am_pm ,day, n_d)
+            else:
+                return '{0}:{1:02d} {2}'.format(final_hour, dif_m, am_pm, n_d)
+        else:
+            if day:
+                return '{0}:{1:02d} {2}, {3} {4}'.format(final_hour, dif_m, am_pm ,day, n_d)
+            else:
+                return '{0}:{1:02d} {2} {3}'.format(final_hour, dif_m, am_pm, n_d)
+
+
 def order_12(final_minutes, day, final_hour, var1, var2):
 
     if final_minutes < 60:
         if day:
             return '{0}:{1:02d} {2}, {3}'.format(final_hour, final_minutes, var1 , day)
         else:
-            return '{0}:{1:02d} {2}'.format(final_hour, final_minutes, var1)
-    elif 60 < final_minutes < 120:
+            return '{0}:{1:02d} {2} {3}'.format(final_hour, final_minutes, var1)
+
+
+    elif 60 <= final_minutes < 120:
         dif_m = final_minutes - 60
         final_hour += 1
+        # change the am, pm to pm, am if total hours after adding 1 because of total min 
+        # trespass 60, we do thi to udpate the time format
         if final_hour >= 12:
             if day:
                 return '{0}:{1:02d} {2}, {3}'.format(final_hour,dif_m,var2 ,day)
@@ -177,20 +212,20 @@ def add_time(start, end, day= ''):
             return order_12(final_minutes, day, final_hour, 'AM', 'PM')
                 
         elif 12 <= final_hour < 24:
-            return order(period, final_minutes, final_hour, every_12[0], 'PM', day )
+            return order_12_48(final_hour, final_minutes,  every_12[0], 'PM', day)
                 
 
         elif 24 <= final_hour < 36:
-            return order(period, final_minutes, final_hour,every_12[1], 'AM', day, '(next day)')
+            return order_12_48(final_hour, final_minutes, every_12[1], 'AM', day, n_d='(next day)')
                 
         elif 36 <= final_hour < 48: 
-            return order(period, final_minutes, final_hour,every_12[2], 'PM', day, '(next day)')
+            return order_12_48(final_hour, final_minutes, every_12[2], 'PM', day, '(next day)')
 
-        else:
-            for m, n in every_day_3:
-                if m[0] >= 48:
-                    if m[0] <= final_hour < m[1]:
-                        return order(period, final_minutes, final_hour, e_12, n, day,var2=n_days, var3='days later')
+        # else:
+        #     for m, n in every_day_3:
+        #         if m[0] >= 48:
+        #             if m[0] <= final_hour < m[1]:
+        #                 return order(period, final_minutes, final_hour, e_12, n, day,var2=n_days, var3='days later')
 
 
 
@@ -199,23 +234,23 @@ def add_time(start, end, day= ''):
                 return order_12(final_minutes, day, final_hour, 'PM', 'AM')
                 
         elif 12 <= final_hour < 24:
-            return order(period, final_minutes, final_hour, every_12[0], 'AM', day,' (next day)')
+            return order_12_48(final_hour, final_minutes,  every_12[0], 'AM', day,' (next day)')
                 
         elif 24 <= final_hour < 36:
 
-            return order(period, final_minutes, final_hour,every_12[1], 'PM', day,' (next day)')
+            return order_12_48(final_hour, final_minutes, every_12[1], 'PM', day,' (next day)')
         
-        else:
-            for m, n in every_day_3:
-                if m[0] >= 48:
-                    if m[0] <= final_hour < m[1]:
-                        return order(period, final_minutes, final_hour,  n, day, var3='days later')
+        # else:
+        #     for m, n in every_day_3:
+        #         if m[0] >= 48:
+        #             if m[0] <= final_hour < m[1]:
+        #                 return order(period, final_minutes, final_hour,  n, day, var3='days later')
 
 if __name__ == '__main__':
 
-    # print(add_time("3:00 PM", "3:10"))
-    # print(add_time("11:30 AM", "2:32", "Monday"))
-    # print(add_time("11:43 AM", "00:20"))
-    # print(add_time("10:10 PM", "3:30"))
+    #print(add_time("3:50 PM", "3:10"))
+    print(add_time("11:30 AM", "2:32", "Monday"))
+    #print(add_time("11:43 AM", "00:20"))
+    print(add_time("10:10 PM", "14:30"))
     #print(add_time("11:43 PM", "24:20", "tueSday"))
-    print(add_time("6:30 AM", "205:12", 'tuesday'))
+    #print(add_time("6:30 AM", "205:12", 'tuesday'))
