@@ -39,6 +39,5 @@ class Category:
         total = f"Total: {self.get_balance():.2f}"
         return f"{title}\n{ledger}{total}"
 
-
 if __name__ == '__main__':
     pass
