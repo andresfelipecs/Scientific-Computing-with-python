@@ -1,6 +1,5 @@
-
-
 import math
+
 
 class Category:
     def __init__(self, name):
@@ -22,9 +21,10 @@ class Category:
             balance += entry["amount"]
         return balance
 
-    def transfer(self, amount, other_category):
-        if self.withdraw(amount, f"Transfer to {other_category.name}"):
-            other_category.deposit(amount, f"Transfer from {self.name}")
+    def transfer(self, amount, category):
+        if self.check_funds(amount):
+            self.withdraw(amount, "Transfer to %s" % category.name)
+            category.deposit(amount, "Transfer from %s" % self.name)
             return True
         return False
 
@@ -32,10 +32,17 @@ class Category:
         return self.get_balance() >= amount
 
     def __str__(self):
-        title = f"{self.name}".center(30, "*")
-        items = "\n".join([f"{item['description'][:23].ljust(23)}{item['amount']:>7.2f}" for item in self.ledger])
-        total = f"Total: {self.get_balance():.2f}"
-        return f"{title}\n{items}{total}"
+        title = "{0}".center(30, "*").format(self.name)
+        items = "\n".join(
+            [
+                "{0:<23}{1:>7.2f}".format(item["description"][:23], item["amount"])
+                for item in self.ledger
+            ]
+        )
+        total = "Total: {:.2f}".format(self.get_balance())
+        return "{0}\n{1}{2}".format(title, items, total)
+
+
 def create_spend_chart(categories):
     spent_percentages = []
     for category in categories:
@@ -44,39 +51,40 @@ def create_spend_chart(categories):
             if item["amount"] < 0:
                 spent += item["amount"]
         spent_percentages.append(int(abs(spent / category.get_balance()) * 100))
-        
+
     max_percentage = max(spent_percentages)
     chart = "Percentage spent by category\n"
     for i in range(max_percentage, -10, -10):
-        chart += f"{i:>3}|"
+        chart += "{:>3}|".format(i)
         for percentage in spent_percentages:
             if percentage >= i:
                 chart += " o"
             else:
                 chart += "  "
         chart += "\n"
-    
+
     chart += "    "
     for i in range(len(categories)):
         chart += "----"
     chart += "\n"
     chart += "     "
-    
+
     for category in categories:
-        chart += f"{category.name[0]}  "
+        chart += "{}  ".format(category.name[0])
     chart += "\n"
     chart += "     "
     for category in categories:
-        chart += f"{category.name[1]}  "
+        chart += "{}  ".format(category.name[1])
     chart += "\n"
-    
+
     if len(categories[0].name) > 2:
         chart += "     "
         for category in categories:
-            chart += f"{category.name[2]}  "
+            chart += "{}  ".format(category.name[2])
         chart += "\n"
-    
+
     return chart
-    
-if __name__ == '__main__':
+
+
+if __name__ == "__main__":
     pass

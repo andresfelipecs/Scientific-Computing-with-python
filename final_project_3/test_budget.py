@@ -1,7 +1,8 @@
-# test_budget.py 
+# test_budget.py
 
-import pytest
-from .budget import Category
+import unittest
+from budget import Category
+
 """
 Code Analysis:
 - The class Category is used to track deposits and withdrawals from a given account. 
@@ -24,38 +25,38 @@ Test Plan:
 - test_check_funds(): tests that the check_funds method checks if there are enough funds in the account to withdraw the given amount
 """
 
-class TestCategory:
 
-    def setup_method(self):
+class TestBudget(unittest.TestCase):
+    def setUp(self):
         self.cat1 = Category("Cat1")
         self.cat2 = Category("Cat2")
 
     def test_init(self):
-        assert self.cat1.name == "Cat1"
-        assert self.cat1.ledger == []
+        self.assertEqual(self.cat1.name, "Cat1")
+        self.assertEqual(self.cat1.ledger, [])
 
     def test_deposit(self):
         self.cat1.deposit(100, "Test Deposit")
-        assert self.cat1.ledger[0]["amount"] == 100
-        assert self.cat1.ledger[0]["description"] == "Test Deposit"
+        self.assertEqual(self.cat1.ledger[0]["amount"], 100)
+        self.assertEqual(self.cat1.ledger[0]["description"], "Test Deposit")
 
     def test_withdraw(self):
         self.cat1.deposit(100)
         self.cat1.withdraw(50, "Test Withdraw")
-        assert self.cat1.ledger[1]["amount"] == -50
-        assert self.cat1.ledger[1]["description"] == "Test Withdraw"
+        self.assertEqual(self.cat1.ledger[1]["amount"], -50)
+        self.assertEqual(self.cat1.ledger[1]["description"], "Test Withdraw")
 
     def test_get_balance(self):
         self.cat1.deposit(100)
         self.cat1.withdraw(50)
-        assert self.cat1.get_balance() == 50
+        self.assertEqual(self.cat1.get_balance(), 50)
 
     def test_transfer(self):
         self.cat1.deposit(100)
         self.cat1.transfer(50, self.cat2)
-        assert self.cat1.get_balance() == 50
-        assert self.cat2.get_balance() == 50
+        self.assertEqual(self.cat1.get_balance(), 50)
+        self.assertEqual(self.cat2.get_balance(), 50)
 
     def test_check_funds(self):
         self.cat1.deposit(100)
-        assert self.cat1.check_funds(50) == True
+        self.assertTrue(self.cat1.check_funds(50))
